@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Repository Complexity Checker</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('#submitBtn').click(function() {
+        var url = $('#repositoryUrl').val();
+        if (url !== '') {
+          $.ajax({
+            type: 'POST',
+            url: '/calculate_complexity',
+            data: { repositoryUrl: url },
+            success: function(response) {
+              $('#result').text('Complexity: ' + response.complexity);
+              if (response.repository) {
+                $('#repositoryName').text('Repository: ' + response.repository.name);
+                $('#repositoryDescription').text('Description: ' + response.repository.description);
+                $('#repositoryLanguage').text('Language: ' + response.repository.language);
+                $('#repositoryUrl').attr('href', response.repository.url);
+                $('#repositoryUrl').text('Link to Repository');
+              } else {
+                $('#repositoryName').text('');
+                $('#repositoryDescription').text('');
+                $('#repositoryLanguage').text('');
+                $('#repositoryUrl').attr('href', '');
+                $('#repositoryUrl').text('');
+              }
+            },
+            error: function(xhr, status, error) {
+              var errorMessage = JSON.parse(xhr.responseText).error;
+              $('#result').text('Error: ' + errorMessage);
+              $('#repositoryName').text('');
+              $('#repositoryDescription').text('');
+              $('#repositoryLanguage').text('');
+              $('#repositoryUrl').attr('href', '');
+              $('#repositoryUrl').text('');
+            }
+          });
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <h1>Repository Complexity Checker</h1>
+  <input type="text" id="repositoryUrl" placeholder="Enter GitHub repository URL" />
+  <button id="submitBtn">Calculate Complexity</button>
+  <div id="result"></div>
+  <div id="repositoryDetails">
+    <h2 id="repositoryName"></h2>
+    <p id="repositoryDescription"></p>
+    <p id="repositoryLanguage"></p>
+    <a id="repositoryUrl" href="" target="_blank"></a>
+  </div>
+</body>
+</html>
